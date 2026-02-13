@@ -1,38 +1,34 @@
-name: Aggiornamento Quotidiano Archivio
+name: Aggiornamento Newsletter
 
 on:
   schedule:
-	# Questa riga dice a GitHub di girare ogni giorno a mezzanotte (UTC)
 	- cron: '0 0 * * *'
-  # Questa riga ti permette di far partire lo script manualmente per testarlo
   workflow_dispatch:
 
 jobs:
   build:
 	runs-on: ubuntu-latest
-
 	steps:
-	  - name: Scarica il codice dalla repo
+	  - name: Checkout
 		uses: actions/checkout@v3
 
-	  - name: Configura Python
+	  - name: Setup Python
 		uses: actions/setup-python@v4
 		with:
 		  python-version: '3.9'
 
-	  - name: Installa le librerie necessarie
+	  - name: Install Dependencies
 		run: pip install requests
 
-	  - name: Esegui lo script Python
+	  - name: Run Script
 		env:
-		  # Qui passiamo la tua chiave API salvata nei Secrets di GitHub
 		  BREVO_API_KEY: ${{ secrets.BREVO_API_KEY }}
 		run: python archivio.py
 
-	  - name: Salva i cambiamenti (index.html) nella repo
+	  - name: Commit and Push
 		run: |
 		  git config --global user.name "GitHub Action"
 		  git config --global user.email "action@github.com"
 		  git add index.html
-		  git commit -m "Aggiornamento automatico newsletter" || exit 0
+		  git commit -m "Aggiornamento automatico" || exit 0
 		  git push
