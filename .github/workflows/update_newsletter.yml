@@ -2,7 +2,7 @@ name: Update Newsletter Archive
 
 on:
   schedule:
-	- cron: '0 0 * * *' # Gira ogni notte a mezzanotte
+  - cron: '0 0 * * *' # Gira ogni notte a mezzanotte
   workflow_dispatch: # Ti permette di farlo girare a mano quando vuoi
 
 jobs:
