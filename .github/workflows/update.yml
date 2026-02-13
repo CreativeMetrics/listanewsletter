@@ -1,10 +1,38 @@
-name: Archivio
+name: Archivio Newsletter
+
 on:
-  workflow_dispatch:
+  schedule:
+    - cron: '0 0 * * *' # Gira ogni notte
+  workflow_dispatch:     # Mantiene il tasto per l'invio manuale
+
 jobs:
   aggiorna:
     runs-on: ubuntu-latest
+    # Diamo il permesso all'azione di scrivere i file nella repo
+    permissions:
+      contents: write
+    
     steps:
-      - uses: actions/checkout@v3
-      - name: Test
-        run: echo "Se non va questo mi ritiro"
+      - name: Checkout del codice
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      - name: Installa librerie
+        run: pip install requests
+
+      - name: Esegui lo script
+        env:
+          BREVO_API_KEY: ${{ secrets.BREVO_API_KEY }}
+        run: python archivio.py
+
+      - name: Salva i cambiamenti
+        run: |
+          git config --global user.name "GitHub Action"
+          git config --global user.email "action@github.com"
+          git add index.html
+          git commit -m "Aggiornamento automatico newsletter" || exit 0
+          git push
